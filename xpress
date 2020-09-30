@@ -1,0 +1,158 @@
+const express = require("express");
+
+const app = express();
+
+app.listen(3000, () = > {
+   console.log("Server on port 3000");
+});
+
+app.get("/", (req,res) = > {
+   res.send("Hola Mundo");
+});
+
+app.get("/about", (req,res) = > {
+   res.send("About me");
+});
+
+app.get("/contact", (req,res) = > {
+   res.send("Formulario de contacto");
+});
+
+app.post
+
+//usamos nodemon
+npm install -g nodemon
+nodemon index.js              (si no usar npx al inicio)
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//EXPRESS es un framework de nodeJs
+// CTRL + K + C
+// Y para descomentar es CTRL + K + U
+// http://expressjs.com/es/
+
+// Es recomendable al iniciar darle npm init -y
+
+// Instalar express con npm install express
+// Entonces se me genera el archivo package-lock.json que no se debería tocar
+// LO UNICO A TOCAR EL SOLO EL PACKAGE.JSON Y EL PURO MI CODIGO
+
+// ENTRA EL CONCEPTO DE NODEMON lo que hace es ver el código js y si hay un cambio reinicia el servidor
+// NPM INSTALL -G NODEMON 
+// nodemon index.js ESTO PARA CORRER NODEMON
+
+// PUEDO HACER USO DE POSTMAN PARA REVISAR PETICIONES
+
+// RES.SEND SI SOLO ES UN MENSAJE
+// RES.JSON( { } ) SI ES UN OBJETO
+
+// PARA HACER COSAS DINAMICAS USO NPM INSTALL EJS
+
+const express = require("express");
+const morgan = require("morgan");
+const app = express(); //Express me devuelve mi servidor
+
+//----------------------------------------------------------------------------CONFIGURACIONES
+//app.set("port",3000); 
+//app.get("port") //Con esto uso el nombre de la variable
+app.set("view engine","ejs");
+//----------------------------------------------------------------------------FIN_CONFIGURACIONES
+
+app.use(express.json()); //Ahora express puede entender los formatos json
+app.use(morgan('dev'));
+
+//Esta es otra forma de usar una función de callback
+app.listen(3000, () => {
+    console.log("Server en puerto 3000");
+});
+
+/*
+app.listen(3000, function () {
+    console.log("Server en puerto 3000");
+});
+*/
+
+//-------------------------------------------------------------------------------------------
+//Para todas las rutas --- yo quiero hacer algo
+app.all("/user", (req,res, next) => {
+    console.log("he recibido una peticion");
+    //res.send("Finish"); si pongo esto acaba la ejecución en esta
+    next(); //Hace lo que te toca 
+});
+
+//Cuando inicie la app viene una petición inicial y se hace de la forma
+//Cuando recibas un get a la ruta inicial haz lo siguiente
+app.get("/", (req,res) => {     //CON ESTO PUEDO HACER COSAS DINAMICAS SOBRE MI HTML OJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+    const data = [{name: "Jac"},{name: "Ant"},{name: "Chin"}];
+    res.render("index.ejs", {personas:data}); 
+});
+
+
+//----------------------------------------------------------------------------ROUTING
+
+app.get("/about", (req,res) => {
+    res.send("About me");
+});
+
+app.get("/contact", (req,res) => {
+    res.send("Contacto");
+});
+
+
+//get sirve para devolver cosas
+app.get("/user", (req,res) => {
+    res.json({
+        userName : "Javier",
+        apellido: "Chin",
+        edad : 20
+    });
+});
+
+
+//----------------------------------------------------------------------------------------------------------
+//post sirve para recibir algo y guardarlo en una db o algo y devolver una respuesta a la app
+app.post("/user", (req,res) => {
+    console.log(req.body);
+    res.send("PETICION POST");
+});
+//si tuvera /user/45 donde 45 es el id para hacerlo dinamico
+app.post("/user/:id", (req,res) => {
+    console.log(req.body);  //CON ESTE JALO EL CUERPO
+    console.log(req.params); //CON ESTE JALO LO DE LA RUTA
+    res.send("PETICION POST");
+});
+
+//----------------------------------------------------------------------------------------------------------
+//put sirve para tomar datos de frontend y actualizar en db o algo y devolver respuesta a la app
+app.put("/user", (req,res) => {
+    res.send("PETICION PUT");
+});
+//PUT con params
+app.put("/user/:id", (req,res) => {
+    console.log(req.body);
+    res.send(`User ${req.params.id} actualizado`);
+});
+
+//put sirve para tomar datos de frontend y eliminar en db o algo y devolver respuesta a la app
+app.delete("/user", (req,res) => {
+    res.send("PETICION DELETE");
+});
+
+//--------------------------------------------------------------------------------------------------------
+//DELETE con params
+app.delete("/user/:id", (req,res) => {
+    res.send(`User ${req.params.id} deleted`);
+});
+
+
+//----------------------------------------------------------------------------MIDDLEWARES
+//Es una manejador de petición antes de que lleguen a la petición original
+//Middleware funciona para todas las rutas
+//Se pone app.use(logger);
+//Procesan datos antes de que lleguen a la ruta
+app.use(express.static("public"));
+
+function logger(req, res, next) {
+    console.log(`Request recibida: ${req.protocol}://${req.get("host")}${req.originalUrl}`);
+    next();
+}
+
